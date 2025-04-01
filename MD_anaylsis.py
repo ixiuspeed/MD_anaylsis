@@ -20,10 +20,8 @@ class Anaylsis():
     def set_graph(self, args):
         self.atoms.set_pbc(args.pbc)
         positions = self.atoms.get_positions()
-        # 创建NeighborList对象
         nl = NeighborList(cutoffs=natural_cutoffs(self.atoms, mult=0.8),
                             self_interaction=False, bothways=True)
-        # 生成邻接矩阵
         nl.update(self.atoms)
         adjacency_matrix = nl.get_connectivity_matrix(sparse=False)
         graph = nx.from_numpy_matrix(adjacency_matrix)
@@ -59,7 +57,15 @@ class Anaylsis():
     def set_degree_hist(self):
         self.degree_hist = nx.degree_hist(self.graph)
         return self.degree_hist
-    
+
+    def parse_key_value_pairs(items):
+        result = {}
+        items = items.split()
+        for item in items:
+            key, value = item.split("=")
+            result[key] = value
+        return result
+        
     def seek_point(pos, point_list):
         result = []
         for index in range(len(pos)):
@@ -68,14 +74,7 @@ class Anaylsis():
                 if  np.linalg.norm(points - tagret_point)<1e-5:
                     result.append(index)
         return result
-    def parse_key_value_pairs(items):
-        result = {}
-        items = items.split()
-        for item in items:
-            key, value = item.split("=")
-            result[key] = value
-        return result
-    
+        
     def set_pd(self, args):
         pos = self.atoms.get_positions()
         weight = np.empty(pos.shape[0])
